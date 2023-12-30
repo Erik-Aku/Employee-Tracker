@@ -1,7 +1,6 @@
 const inquirer = require("inquirer");
 const db = require("./env");
 const mysql = require("mysql2");
-const viewDepartment = require("./db/queries");
 const asTable = require("as-table").configure({ delimiter: " | ", dash: "-" });
 
 db.connect((error) => {
@@ -31,7 +30,8 @@ const mainMenu = () => {
     ])
     .then((data) => {
       if (data.choices === "View All Departments") {
-        db.query(viewDepartment, (error, res) => {
+        let sql = `SELECT department.id AS id, department.department_name AS department FROM department`;
+        db.query(sql, (error, res) => {
           if (error) {
             throw error;
           }
@@ -40,6 +40,21 @@ const mainMenu = () => {
           console.log("\n");
           mainMenu();
         });
+      }
+
+      if (data.choices === "View All Roles") {
+        let sql = `SELECT role.id, role.title, department.department_name AS department, role.salary
+        FROM role
+        INNER JOIN department ON role.department_id = department.id`;
+        db.query(sql, (error, res) => {
+            if (error) {
+                throw error;
+            }
+            console.log("\n");
+            console.log(asTable(res));
+            console.log("\n");
+            mainMenu();
+        })
       }
     });
 };
