@@ -1,13 +1,16 @@
 const inquirer = require("inquirer");
 const db = require("./env");
 const mysql = require("mysql2");
+// prints objects and arrays as ASCII tables
 const asTable = require("as-table").configure({ delimiter: " | ", dash: "-" });
 
+// Connect to database and launch application
 db.connect((error) => {
   if (error) throw error;
   mainMenu();
 });
 
+// Main Menu inquirer prompt that routes to different functions based on user selection
 const mainMenu = () => {
   inquirer
     .prompt([
@@ -55,6 +58,7 @@ const mainMenu = () => {
     });
 };
 
+// displays all department data to console
 const viewAllDepartments = () => {
   let sql = `SELECT department.id AS id, department.department_name AS department FROM department`;
   db.query(sql, (error, res) => {
@@ -68,6 +72,7 @@ const viewAllDepartments = () => {
   });
 };
 
+// displays all role data along with role's corresponding department
 const viewAllRoles = () => {
   let sql = `SELECT role.id, role.title, department.department_name AS department, role.salary
         FROM role
@@ -83,6 +88,7 @@ const viewAllRoles = () => {
   });
 };
 
+// Displays all employee data including their department and role to the console
 const viewAllEmployees = () => {
   let sql = `SELECT employee.id AS 'emp_id', employee.first_name, employee.last_name, role.title, role.salary, department.department_name, 
     employee.manager_id AS 'Manager'    
@@ -102,6 +108,7 @@ const viewAllEmployees = () => {
   });
 };
 
+// adds a new department
 const addDepartment = () => {
   inquirer
     .prompt([
@@ -123,6 +130,7 @@ const addDepartment = () => {
     });
 };
 
+// adds a new role to the database
 const addRole = () => {
   let sql = `SELECT * from department`;
 
@@ -133,6 +141,7 @@ const addRole = () => {
 
     let existingDeptNames = [];
 
+    // compiles all the departments to user selection.
     response.forEach((department) => {
       existingDeptNames.push(department.department_name);
     });
@@ -161,6 +170,7 @@ const addRole = () => {
       .then((data) => {
         let deptId;
 
+        // captures department_id for sql insert
         response.forEach((department) => {
           if (data.departmentChoice === department.department_name) {
             deptId = department.id;
@@ -181,6 +191,7 @@ const addRole = () => {
   });
 };
 
+// Adds a new employee to the database
 const addEmployee = () => {
   let sql = `SELECT * from role`;
   db.query(sql, (error, response) => {
@@ -190,6 +201,7 @@ const addEmployee = () => {
 
     let existingRoles = [];
 
+    // compiles a list of role titles for user selection 
     response.forEach((role) => {
       existingRoles.push(role.title);
     });
@@ -218,6 +230,7 @@ const addEmployee = () => {
         let roleId;
         let params = [data.firstName, data.lastName];
 
+        // captures role_id for database insert
         response.forEach((role) => {
           if (data.roleChoice === role.title) {
             roleId = role.id;
@@ -231,6 +244,7 @@ const addEmployee = () => {
             throw error;
           }
 
+        // concat first and last name for user selection and captures id of that selected user
           const existingManagers = response.map(
             ({ id, first_name, last_name }) => ({
               name: first_name + " " + last_name,
@@ -266,6 +280,7 @@ const addEmployee = () => {
   });
 };
 
+// updates employee's role and saves it to the database
 const updateEmployee = () => {
   let sql = `SELECT * FROM employee`;
   db.query(sql, (error, response) => {
@@ -273,6 +288,7 @@ const updateEmployee = () => {
       throw error;
     }
 
+    // concat first and last name for user selection and captures id of that selected user
     const employees = response.map(({ id, first_name, last_name }) => ({
       name: first_name + " " + last_name,
       value: id,
@@ -298,6 +314,7 @@ const updateEmployee = () => {
 
           let existingRoles = [];
 
+        // compiles list of roles for user selection
           response.forEach((role) => {
             existingRoles.push(role.title);
           });
@@ -322,14 +339,13 @@ const updateEmployee = () => {
               });
               let params = [];
               params.push(roleId, empId);
-              console.log(params);
 
               let sql = `UPDATE employee SET employee.role_id = ? WHERE employee.id = ?`;
               db.query(sql, params, (error) => {
                 if (error) {
                   throw error;
                 }
-                console.log(`$data.employeeChoice has been updated!`);
+                console.log(`employee has been updated!`);
                 viewAllEmployees();
               });
             });
