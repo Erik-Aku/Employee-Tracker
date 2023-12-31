@@ -1,7 +1,7 @@
 # Employee-Tracker
 
 ## Description
-A node.js command line application that manages and employee database using inquierer and MySQL
+A node.js command line application that manages an employee database using inquierer and MySQL
 
 ## Installation
 - npm install inquirer
