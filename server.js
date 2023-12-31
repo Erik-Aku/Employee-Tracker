@@ -49,6 +49,9 @@ const mainMenu = () => {
       if (data.choices === "Add an Employee") {
         addEmployee();
       }
+      if (data.choices === "Update an Employee Role") {
+        updateEmployee();
+      }
     });
 };
 
@@ -255,6 +258,78 @@ const addEmployee = () => {
                   throw error;
                 }
                 console.log("Employee has been added!");
+                viewAllEmployees();
+              });
+            });
+        });
+      });
+  });
+};
+
+const updateEmployee = () => {
+  let sql = `SELECT * FROM employee`;
+  db.query(sql, (error, response) => {
+    if (error) {
+      throw error;
+    }
+
+    const employees = response.map(({ id, first_name, last_name }) => ({
+      name: first_name + " " + last_name,
+      value: id,
+    }));
+
+    inquirer
+      .prompt([
+        {
+          name: "employeeChoice",
+          type: "list",
+          message: "Which employee's role would you like to update?",
+          choices: employees,
+        },
+      ])
+      .then((data) => {
+        let empId = data.employeeChoice;
+
+        let sql = `SELECT * FROM role`;
+        db.query(sql, (error, response) => {
+          if (error) {
+            throw error;
+          }
+
+          let existingRoles = [];
+
+          response.forEach((role) => {
+            existingRoles.push(role.title);
+          });
+
+          inquirer
+            .prompt([
+              {
+                name: "roleChoice",
+                type: "list",
+                message:
+                  "Which role do you want to assign to the selected employee?",
+                choices: existingRoles,
+              },
+            ])
+            .then((data) => {
+              let roleId;
+
+              response.forEach((role) => {
+                if (data.roleChoice === role.title) {
+                  roleId = role.id;
+                }
+              });
+              let params = [];
+              params.push(roleId, empId);
+              console.log(params);
+
+              let sql = `UPDATE employee SET employee.role_id = ? WHERE employee.id = ?`;
+              db.query(sql, params, (error) => {
+                if (error) {
+                  throw error;
+                }
+                console.log(`$data.employeeChoice has been updated!`);
                 viewAllEmployees();
               });
             });
