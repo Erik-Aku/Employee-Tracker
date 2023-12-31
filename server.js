@@ -56,5 +56,27 @@ const mainMenu = () => {
             mainMenu();
         })
       }
+
+      if (data.choices === "View All Employees") {
+        let sql = `SELECT employee.id AS 'emp_id', employee.first_name, employee.last_name, role.title, role.salary, department.department_name, 
+        employee.manager_id AS 'Manager'    
+        FROM department
+        INNER JOIN role ON department.id = role.department_id
+        INNER JOIN employee ON role.id = employee.role_id
+        ORDER BY employee.id ASC`;
+
+        db.query(sql, (error, res) => {
+            if (error) {
+                throw error;
+            }
+            console.log("\n");
+            console.log(asTable(res));
+            console.log("\n");
+            mainMenu();
+        })
+      }
     });
 };
+
+
+
