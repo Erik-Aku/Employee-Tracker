@@ -22,4 +22,4 @@ This application is designed to manage employees. Simply follow the prompts to u
 - Update an employee's role in the database
 
 ## Poject Links
-A walkthrough video demonstrating the functionality of the application: 
+A walkthrough video demonstrating the functionality of the application: https://drive.google.com/file/d/1CDOX7aYKJDaIPi0SbFw7ndk3elmUPyLB/view?usp=sharing
