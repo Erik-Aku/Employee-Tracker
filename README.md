@@ -21,5 +21,5 @@ This application is designed to manage employees. Simply follow the prompts to u
 - Add a new employee to the database
 - Update an employee's role in the database
 
-## Poject Links
+## Project Links
 A walkthrough video demonstrating the functionality of the application: https://drive.google.com/file/d/1CDOX7aYKJDaIPi0SbFw7ndk3elmUPyLB/view?usp=sharing
